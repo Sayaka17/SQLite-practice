@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/kanai_sayaka/Desktop/Project/01. SQLite/Practice/lecture/transaciton.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="917"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,13:mainorder_details"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="order_details" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="61"/><column index="2" value="99"/><column index="3" value="97"/><column index="4" value="98"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="practice01.sql">-- &lt;データの抽出&gt;
+-- SELECT AS：データを選択して、カラム名を変えている
+SELECT id AS order_id, price AS price_jpy
+FROM orders;
+
+-- LIMIT：抽出するデータ数を絞り込む, データ数が多すぎると処理ができないので制限するために使う
+SELECT *
+FROM orders
+LIMIT 2, 4;
+
+-- ORDER BY: 並び替え
+SELECT * 
+FROM orders
+ORDER BY price DESC --降順
+LIMIT 5;
+
+-- WHERE: 条件指定
+SELECT *
+FROM order_details
+WHERE item=&quot;バッグ&quot;
+LIMIT 3;
+
+-- 演算子：NOT EQUAL = &lt;&gt;
+SELECT *
+FROM orders 
+WHERE price &lt;&gt;3000
+LIMIT 5;
+
+SELECT *
+FROM orders 
+WHERE payment_date &gt; '2021-02-01'
+LIMIT 5;
+
+-- 論理演算子
+SELECT *
+FROM order_details
+WHERE (item='バッグ' OR quantity &gt;= 1) AND order_id=4
+LIMIT 5;
+
+SELECT *
+FROM orders
+WHERE price IS NULL
+LIMIT 5;
+
+SELECT *
+FROM orders
+WHERE price IS NOT NULL
+LIMIT 5;</sql><sql name="practice02.sql">-- ＜データの抽出＞
+-- LIKE 文字列の部分一致検索
+SELECT *
+FROM order_details
+WHERE item
+LIKE 'バ%'
+LIMIT 5;
+
+SELECT *
+FROM order_details
+WHERE item
+LIKE '__' --2文字のレコードが抽出される
+LIMIT 5;
+
+-- BETWEEN A AND B 範囲指定でデータを抽出する。両端数字も含む(2500も入ってる)
+SELECT *
+FROM orders
+WHERE price
+BETWEEN 2500 AND 8000
+LIMIT 5;
+
+
+</sql><sql name="practice03.sql">-- &lt;データ抽出&gt;条件分岐
+-- CASE文
+SELECT *,
+CASE
+	WHEN price &gt; 10000 THEN 'High'
+	WHEN price &lt;= 10000 THEN 'Low'
+	ELSE 'Other'
+END AS price_level
+FROM orders;</sql><sql name="practice04.sql">-- データの集計
+SELECT price, price*2 AS price_x2
+FROM orders
+LIMIT 5;
+
+SELECT price, price*2 AS price_x2, (price+100) * 0.05 AS price_prac
+FROM orders
+LIMIT 5;
+
+-- 集計関数
+SELECT COUNT(price) AS price_count
+FROM orders
+LIMIT 5;
+
+SELECT SUM(price) AS price_sum
+FROM orders
+LIMIT 5;
+
+SELECT AVG(price) AS avg_sum
+FROM orders
+LIMIT 5;
+
+SELECT MAX(price) AS price_max, MIN(payment_date)
+FROM orders
+LIMIT 5;
+
+-- 重複なしのデータ抽出（DISTINCT, GROUP BY）
+-- DISTINCT 選択した結果から単純に重複を除外したいとき, ()の中に書くよ
+SELECT COUNT(DISTINCT customer_id)
+FROM orders
+LIMIT 5; -- 4が返ってくる
+
+SELECT DISTINCT item
+FROM order_details
+LIMIT 5; -- バッグ・帽子・ジャケット
+
+-- GROUP BY 選択した結果から重複を除外した上で、なにかを集計したいとき
+SELECT item, SUM(quantity)
+FROM order_details
+GROUP BY item
+LIMIT 5; 
+-- itemごとのquantity合計値が返ってくる
+
+SELECT item, SUM(quantity)
+FROM order_details
+WHERE item='帽子'
+GROUP BY item
+LIMIT 5;
+
+-- HAVING
+</sql><sql name="practice06.sql">-- 結合処理
+-- 内部結合 INNER JOIN
+-- ordersにorder_detailsをくっつける
+SELECT orders.customer_id, orders.price, orders.payment_date, order_details.item, order_details.quantity
+FROM orders
+INNER JOIN order_details
+ON orders.id = order_details.order_id
+-- WHERE orders.price &gt; 5000
+LIMIT 5
+;
+
+-- 外部結合 LEFT OUTER JOIN ON
+SELECT O.customer_id, O.price, O.payment_date, OD.item, OD.quantity
+FROM orders AS O
+LEFT OUTER JOIN order_details AS OD
+ON O.id = OD.order_id
+LIMIT 5
+;
+
+-- 交差結合　こんなのもあるよ程度でおｋ CROSS JOIN
+</sql><current_tab id="4"/></tab_sql></sqlb_project>
